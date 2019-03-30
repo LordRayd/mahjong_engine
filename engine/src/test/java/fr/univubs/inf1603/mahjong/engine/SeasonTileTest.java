@@ -1,5 +1,7 @@
 package fr.univubs.inf1603.mahjong.engine;
 
+import fr.univubs.inf1603.mahjong.engine.rules.SeasonTile;
+import fr.univubs.inf1603.mahjong.engine.rules.WindHonor;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

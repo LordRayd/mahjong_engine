@@ -1,5 +1,8 @@
 package fr.univubs.inf1603.mahjong.engine;
 
+import fr.univubs.inf1603.mahjong.engine.rules.AbstractTile;
+import fr.univubs.inf1603.mahjong.engine.rules.CommonTile;
+import fr.univubs.inf1603.mahjong.engine.game.GameTile;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

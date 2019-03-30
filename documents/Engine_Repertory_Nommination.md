@@ -1,35 +1,54 @@
 # Mahjong Engine Design Document
 
 This document provide information about the package of the engine module.
-If we use the following packages we will not have to search too many time in the directory to find a specific file.
-We will separate Objects from Exceptions and Tiles from Zones
+Our module becomes bigger and bigger if it continues we will have problem to find the file.
+We decide to split the module in 3 part:
+* game : contains all the game Object like the Board, Zone ...
+* rules : contains the tiles and the rules applicable
+* scoring : contains all the classes who help to do the scoring
+
+We will certainly do some other sub-package like a package tiles in rules.
 
 ## Normalised naming of mahjong package
 
 ```
 engine  
 │
-└───Object
-|   └───Tiles
-|   │   |   AbstractTiles.java
-|   │   │   CommonTile.java
-|   |   |   Complex.Tile.java
-|   |   |   Flower.java
-|   |   |   GameTile.java
-|   |   |   HonorTile.java
-|   |   |   Season.java
-|   |   |   SimpleHonor.java
-|   |   |   SuperiorHonor.java
-|   |   |   WindHonor.java
-|   │   
-|   └───Zones
-|   |   │   MoneyZone.java
-|   |   │   MoneyZone.java
-|   |   │   TileZone.java
-|   |   |   Zone.java
-|   |
-|   └───Board.java
-|   └───Game.java
-└───Exceptions
-|   └───TileZoneException.java
+└───game
+|   |   Board.java
+|   |   Game.java
+|   |   GameException.java
+|   |   GameTile.java
+|   |   GameZone.java
+|   |   Meld.java
+|   |   MeldZone.java
+|   |   Move.java
+|   |   MoveException.java
+|   |   TileZone.java
+|   |   UniqueIdentifiable.java
+|   |   Zone.java
+|   |   ZoneException.java
+|
+└───rules
+|   │   AbstractTiles.java
+|   |   BoardRule.java
+|   │   CommonTile.java
+|   |   Complex.Tile.java
+|   |   Flower.java
+|   |   HiddenTile.java
+|   |   HonorTile.java
+|   |   Season.java
+|   |   SimpleHonor.java
+|   |   StartingWall.java
+|   |   SuperiorHonor.java
+|   |   SupremeHonor.java
+|   |   WindHonor.java
+|
+└───scoring
+|   |   AbstractPatternList.java
+|   |   Combination.java
+|   |   IdentifiablePattern.java
+|   |   IdentifiedPattern.java
+|   |   InternationalPatternList.java
+|   |   PlayerSet.java
 ```
