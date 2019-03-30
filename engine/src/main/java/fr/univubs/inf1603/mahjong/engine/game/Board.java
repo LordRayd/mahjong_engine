@@ -26,7 +26,7 @@ public class Board implements UniqueIdentifiable {
      *
      * @param wZ The Wall of the Board
      * @param pZ The HashMap of the Player(int) and their Zone
-     * @param uuid
+     * @param uuid L identifiant unique du Board
      */
     public Board(Zone wZ, HashMap<Integer, Zone> pZ, UUID uuid) {
         this.wallZone = wZ;
@@ -64,8 +64,8 @@ public class Board implements UniqueIdentifiable {
     }
 
     /**
-     *
-     * @return 
+     * Fait une copie du Board
+     * @return La copie du Board
      * @throws fr.univubs.inf1603.mahjong.engine.game.ZoneException 
      */
     public Board getClone() throws ZoneException{
@@ -99,7 +99,7 @@ public class Board implements UniqueIdentifiable {
 
     /**
      *
-     * @return 
+     * @return Le mur du Board
      */
     public Zone getWallZone() {
         return this.wallZone;
@@ -107,7 +107,7 @@ public class Board implements UniqueIdentifiable {
 
     /**
      *
-     * @return
+     * @return L identifiant unique du Board
      */
     @Override
     public UUID getUUID() {
