@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * Cette classe est une représentation d'une zone contenant des tuiles
  *
- * @author COGOLUEGNES Charles
+ * @author COGOLUEGNES Charles, Samuel LE BERRE
  */
 public class TileZone extends GameZone implements Serializable, Cloneable{
 
@@ -137,5 +137,10 @@ public class TileZone extends GameZone implements Serializable, Cloneable{
         boolean ret = this.tileList.remove(tile);
         propertyChangeSupport.firePropertyChange("content", this.tileList, this.tileList);
         return ret;
+    }
+
+    @Override
+    public PropertyChangeSupport getPropertyChangeSupport() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

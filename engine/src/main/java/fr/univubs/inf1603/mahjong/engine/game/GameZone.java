@@ -7,9 +7,21 @@ import java.util.UUID;
  * @author Samuel LE BERRE, COGOLUEGNES Charles
  */
 public abstract class GameZone implements Persistable{
+    /**
+     * L identifiant de l objet (unique)
+     */
     private final UUID uuid;
+    /**
+     * Le nom de l objet
+     */
     private String name;
-    protected boolean hidden;    
+    /**
+     * Si la zone est cache 
+     */
+    protected boolean hidden; 
+    /**
+     * Si la zone est cachable
+     */
     protected final boolean hideable;
     
     /**

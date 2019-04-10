@@ -2,6 +2,7 @@ package fr.univubs.inf1603.mahjong.engine.game;
 
 import fr.univubs.inf1603.mahjong.engine.persistence.Persistable;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -16,12 +17,12 @@ public class Board implements Persistable, Cloneable {
      * Represents the players defined by an integer and their zone. The zone is
      * the container of all the zone of the player.
      */
-    private HashMap<Integer, Zone> playersZones;
+    private HashMap<Integer, PlayerZone> playersZones;
 
     /**
      * Represents the Wall of the Mahjong
      */
-    private Zone wallZone;
+    private TileZone wallZone;
     private final UUID uuid;
 
     /**
@@ -31,7 +32,7 @@ public class Board implements Persistable, Cloneable {
      * @param pZ The HashMap of the Player(int) and their Zone
      * @param uuid L identifiant unique du Board
      */
-    public Board(Zone wZ, HashMap<Integer, Zone> pZ, UUID uuid) {
+    public Board(TileZone wZ, HashMap<Integer, PlayerZone> pZ, UUID uuid) {
         this.wallZone = wZ;
         this.playersZones = pZ;
         this.uuid = uuid;
@@ -43,7 +44,7 @@ public class Board implements Persistable, Cloneable {
      * @param wZ The Wall of the Board
      * @param pZ The HashMap of the Player(int) and their Zone
      */
-    public Board(Zone wZ, HashMap<Integer, Zone> pZ) {
+    public Board(TileZone wZ, HashMap<Integer, PlayerZone> pZ) {
         this(wZ, pZ, UUID.randomUUID());
     }
 
@@ -52,8 +53,8 @@ public class Board implements Persistable, Cloneable {
      *
      * @param wZ The Wall of the Board
      */
-    private Board(Zone wZ) {
-        this(wZ, new HashMap<Integer, Zone>(), UUID.randomUUID());
+    private Board(TileZone wZ) {
+        this(wZ, new HashMap<Integer, PlayerZone>(), UUID.randomUUID());
     }
 
     /**
@@ -62,7 +63,7 @@ public class Board implements Persistable, Cloneable {
      * @param player The player we want to add in the HashMap
      * @param zone The zone of the player
      */
-    public void addPlayerZone(int player, Zone zone) {
+    public void addPlayerZone(int player, PlayerZone zone) {
         this.playersZones.put(player, zone);
     }
 
@@ -88,7 +89,7 @@ public class Board implements Persistable, Cloneable {
      * @param player The player we want to get the zone
      * @return the zone of the given player
      */
-    public Zone getPlayerZone(int player) {
+    public PlayerZone getPlayerZone(int player) {
         return this.playersZones.get(player);
     }
 
@@ -96,7 +97,7 @@ public class Board implements Persistable, Cloneable {
      * Accesseur sur la zone du mur
      * @return Le mur du Board
      */
-    public Zone getWallZone() {
+    public TileZone getWallZone() {
         return this.wallZone;
     }
 
@@ -109,5 +110,9 @@ public class Board implements Persistable, Cloneable {
     @Override
     public PropertyChangeSupport getPropertyChangeSupport() {
         return propertyChangeSupport;
+    }
+    
+    public ArrayList<GameTile> getPlayerHand(int player){
+        return this.playersZones.get(player).getHand();
     }
 }
