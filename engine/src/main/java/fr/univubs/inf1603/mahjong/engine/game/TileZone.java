@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * Cette classe est une représentation d'une zone contenant des tuiles
  *
- * @author COGOLUEGNES Charles, Samuel LE BERRE
+ * @author COGOLUEGNES Charles
  */
 public class TileZone extends GameZone implements Serializable, Cloneable{
 
