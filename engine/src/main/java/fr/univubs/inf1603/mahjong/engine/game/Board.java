@@ -34,16 +34,17 @@ public interface Board extends Persistable {
     /**
      * @param identifier The identifier of the TileZone we want
      * @return The zone corresponding to this identifier
+     * @throws GameException If the wanted tilezone is not in the board.
      */
-    public TileZone getTileZone(TileZoneIdentifier identifier);
+    public TileZone getTileZone(TileZoneIdentifier identifier)throws GameException;
 
     /**
      * 
      * @param normalizedName The normalized name of the zone we want to get
      * @return Returns the zone corresponding to this normalized name
-     * @throws ZoneException If the provided String does not correspond to any zone
+     * @throws GameException If the provided String does not correspond to any zone
      */
-    public TileZone getTileZone(String normalizedName) throws ZoneException;
+    public TileZone getTileZone(String normalizedName) throws GameException;
     
     public Wind getCurrentWind() throws GameException;
     

@@ -2,6 +2,8 @@ package fr.univubs.inf1603.mahjong.engine.game;
 
 import fr.univubs.inf1603.mahjong.engine.persistence.Persistable;
 import fr.univubs.inf1603.mahjong.engine.rule.AbstractTile;
+import fr.univubs.inf1603.mahjong.engine.rule.Wind;
+
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import java.util.UUID;
@@ -11,7 +13,7 @@ import java.util.UUID;
  *
  * @author Malléjac Clément
  */
-public class GameTile implements Serializable, Cloneable, Persistable {
+public class GameTile implements GameTileInterface, Serializable, Cloneable, Persistable {
 
     private AbstractTile tile;
     private final int gameID;
@@ -33,18 +35,16 @@ public class GameTile implements Serializable, Cloneable, Persistable {
         this(gameID, tile, UUID.randomUUID());
     }
 
-    /**
-     *
-     * @return Returns this GameTile's AbstractTile
-     */
+    @Override
     public AbstractTile getTile() {
         return this.tile;
     }
 
     /**
-     *
+     * 
      * @return Returns this tiles order in the deck
      */
+    @Override
     public int getGameID() {
         return this.gameID;
     }
@@ -69,6 +69,11 @@ public class GameTile implements Serializable, Cloneable, Persistable {
 
         this.tile = newTile;
         propertyChangeSupport.firePropertyChange("tile", oldValue, this.tile);
+    }
+
+    @Override
+    public String toString(){
+        return gameID + ":" + tile.toNormalizedName();
     }
 
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
