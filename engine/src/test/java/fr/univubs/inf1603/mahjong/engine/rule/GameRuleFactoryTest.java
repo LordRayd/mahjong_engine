@@ -15,7 +15,6 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author maxime
  */
 public class GameRuleFactoryTest {
     
@@ -24,19 +23,21 @@ public class GameRuleFactoryTest {
 
     /**
      * Test of create method, of class GameRuleFactory.
+     * @throws java.lang.Exception
      */
     @Test
     public void testCreate_String_Search() throws Exception {
         System.out.println("create");
-        String name = "SILLY_RULE";
+        String name = "SILLY";
         GameRuleFactory instance = new GameRuleFactory();
-        GameRule expResult = Rule.SILLY_RULE;
+        GameRule expResult = Rule.SILLY;
         GameRule result = instance.create(name);
         assertEquals(expResult, result);
     }
     
     /**
      * Test of create method, of class GameRuleFactory.
+     * @throws java.lang.Exception
      */
     @Test
     public void testCreate_String_Create() throws Exception {
@@ -55,12 +56,13 @@ public class GameRuleFactoryTest {
 
     /**
      * Test of create method, of class GameRuleFactory.
+     * @throws java.lang.Exception
      */
     @Test
     public void testCreate_BoardRule_ScoringSystem() throws Exception {
         System.out.println("create");
-        GameRule expResult = Rule.INTERNATIONAL_RULE;
-        String expName = "INTERNATIONAL_RULE";
+        GameRule expResult = Rule.INTERNATIONAL;
+        String expName = "INTERNATIONAL";
         BoardRule boardRule = expResult.getBoardRule() ;
         ScoringSystem scoringSystem = expResult.getScoringSystem();
         GameRuleFactory instance = new GameRuleFactory();
@@ -71,6 +73,7 @@ public class GameRuleFactoryTest {
     
     /**
      * Test of create method, of class GameRuleFactory.
+     * @throws java.lang.Exception
      */
     @Test
     public void testCreate_BoardRule_ScoringSystem_Create() throws Exception {

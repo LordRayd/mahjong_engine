@@ -3,20 +3,19 @@ package fr.univubs.inf1603.mahjong.engine.rule;
  * PlayerSituation represents the situation a player could have with all tiles; including the player's hand, tiles set down, winds from the round 
  * and from the player, conditions about a tile drawn or stolen. 
  * It could be a fictive situation.
- * @author Piere Guriel--Fardel, Anton Cosnefroy
  */
 
 import fr.univubs.inf1603.mahjong.engine.game.GameTile;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 
 public class PlayerSituation {
     private GameTile winningTile;
-    private Collection<GameTile> hand;
-    private Collection<Combination> concealed;
-    private Collection<Combination> melds;
-    private Collection<GameTile> supremeHonors;
+    private Collection<GameTile> hand = new HashSet<>();
+    private Collection<Combination> concealed = new HashSet<>();
+    private Collection<Combination> melds = new HashSet<>();
+    private Collection<GameTile> supremeHonors = new HashSet<>();
     private boolean drawnFromWall;
     private boolean takenFromDiscard;
     private Wind roundWind;
@@ -37,10 +36,10 @@ public class PlayerSituation {
     public PlayerSituation(GameTile winningTile, Collection<GameTile> hand, Collection<Combination> concealed, Collection<Combination> melds, Collection<GameTile> supremeHonors,
                            boolean drawnFromWall, boolean takenFromDiscard, Wind roundWind, Wind playerWind){
         this.winningTile = winningTile;
-        this.hand = new ArrayList<GameTile>(hand);
-        this.concealed = new ArrayList<Combination>(concealed);
-        this.melds = new ArrayList<Combination>(melds);
-        this.supremeHonors = new ArrayList<GameTile>(supremeHonors);
+        this.hand.addAll(hand);
+        this.concealed.addAll(concealed);
+        this.melds.addAll(melds);
+        this.supremeHonors.addAll(supremeHonors);
         this.drawnFromWall = drawnFromWall;
         this.takenFromDiscard = takenFromDiscard;
         this.roundWind = roundWind;
