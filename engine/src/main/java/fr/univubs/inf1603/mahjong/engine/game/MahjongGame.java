@@ -1,13 +1,12 @@
 package fr.univubs.inf1603.mahjong.engine.game;
-
-import fr.univubs.inf1603.mahjong.engine.rule.GameRule;
-import fr.univubs.inf1603.mahjong.engine.rule.StartingWall;
-import fr.univubs.inf1603.mahjong.engine.rule.Wind;
+import fr.univubs.inf1603.mahjong.engine.rule.*;
 import java.beans.PropertyChangeSupport;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.EnumMap;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 /**
@@ -28,11 +27,11 @@ public class MahjongGame implements Game {
     private ArrayList<Move> possiblesMoves;
     private UUID uuid;
     private boolean ableToRegisterMoves;
-    
+
     private int[] playerPoints;
-    
+
     private final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-    
+
     /**
      * This is the full constructor of MahjongGame, allowing to initialize all of its fields
      * @param rule Rules of this game
@@ -54,11 +53,9 @@ public class MahjongGame implements Game {
         this.uuid = uuid;
         this.playerPoints = playerPoints;
         this.playerWind = playerWind;
-        
+
         this.ableToRegisterMoves=false;
     }
-    
-   
     /**
      * This is a constructor of MahjongGame
      * @param rule Rules of this game
@@ -68,18 +65,19 @@ public class MahjongGame implements Game {
     public MahjongGame(GameRule rule, Duration stealingTime, Duration playingTime){
         this.rule = rule;
         this.stealingTime = stealingTime;
-        this.playingTime = playingTime;    
-        
-        
+
+        this.playingTime = playingTime;
+
+
         this.lastPlayedMove = null;
         this.board = null;
         this.uuid = UUID.randomUUID();
-        this.playerPoints = new int[4];        
-        this.playerWind = null;        
-        
+        this.playerPoints = new int[4];
+        this.playerWind = null;
+
         this.ableToRegisterMoves=false;
     }
-    
+
     @Deprecated
     public MahjongGame(GameRule rule) throws GameException {
         this.rule = rule;
@@ -89,31 +87,7 @@ public class MahjongGame implements Game {
         this.ableToRegisterMoves = false;
     }
 
-    @Override
-    public void launchGame() {
-        if(this.playerWind == null){
-            this.playerWind = this.rule.getBoardRule().getPlayerOrder();
-        }
-        StartingWall wall = this.rule.getBoardRule().buildWall();
-        
-        if(this.board == null){
-            if(wall !=null){
-                this.board = this.rule.getBoardRule().distributeTiles(wall);
-            }else{
-                System.err.println("Wall filled by gamerule : "+rule.getName()+" is null");
-            }
-        }
-    }
 
-    @Override
-    public synchronized void registerMove(Move move) throws GameException {
-        if(this.ableToRegisterMoves){
-          this.registeredMoves.add(move);
-        }
-        else{
-            throw new GameException("Impossible de register le move hors du temps imparti.");
-        }
-    }
 
     @Override
     public Board getBoard(Wind wind) throws GameException {
@@ -122,11 +96,11 @@ public class MahjongGame implements Game {
         }
         return this.board.getViewFromWind(wind);
     }
-    
+
     public Board getBoard(){
         return this.board;
     }
-    
+
     @Override
     public ArrayList<Move> getPossibleMoves() {
         EnumMap<Wind, Collection<Move>> res = this.rule.getBoardRule().findValidMoves(this.board, this.lastPlayedMove);
@@ -136,11 +110,10 @@ public class MahjongGame implements Game {
         }
         return ret;
     }
-
     @Override
     public MahjongGame clone() {
         throw new UnsupportedOperationException("not implemented yet");
-//        return new MahjongGameGame();
+        //        return new MahjongGameGame();
     }
 
     @Override
@@ -178,18 +151,18 @@ public class MahjongGame implements Game {
         return this.board.getCurrentWind();
     }
 
-    
+
     @Override
     public int getPlayerPoints(int player) {
         return this.playerPoints[player];
     }
 
-    
+
     @Override
     public int getPlayerPoints(Wind wind) {
         int indexOfWind=0;
         do{
-          indexOfWind++;  
+          indexOfWind++;
         }while(this.playerWind[indexOfWind] != wind);
         return this.playerPoints[indexOfWind];
     }
@@ -222,15 +195,7 @@ public class MahjongGame implements Game {
         return this.playerWind;
     }
 
-    @Override
-    public ArrayList<Move> getPossibleMoves(Wind wind) throws GameException {
-        return new ArrayList<>(this.rule.getBoardRule().findValidMoves(this.board, this.lastPlayedMove).get(wind));
-    }
 
-    @Override
-    public ArrayList<Move> getPossibleMoves(int player) throws GameException {
-        return getPossibleMoves(playerWind[player]);
-    }
 
     /**
      * Permet d'effectuer le move sur le Board
@@ -249,49 +214,87 @@ public class MahjongGame implements Game {
       }
     }
 
+    @Override
+    public void launchGame() {
+        if(this.playerWind == null){
+            this.playerWind = this.rule.getBoardRule().getPlayerOrder();
+        }
+        StartingWall wall = this.rule.getBoardRule().buildWall();
+
+        if(this.board == null){
+            if(wall !=null){
+                this.board = this.rule.getBoardRule().distributeTiles(wall);
+            }else{
+                System.err.println("Wall filled by gamerule : "+rule.getName()+" is null");
+            }
+        }
+
+        getAndFirePossibleMoves();
+    }
+
+    @Override
+    public void registerMove(Move move) throws GameException {
+        if(this.ableToRegisterMoves){
+          this.registeredMoves.add(move);
+        }
+        else{
+            throw new GameException("Impossible de register le move hors du temps imparti.");
+        }
+    }
+
+
+
     /**
      * Permet de récupérer les moves possibles sur un Board via Rule et de les notifier
      */
     private void getAndFirePossibleMoves(){
-      this.possiblesMoves = new ArrayList<Move>();
+      this.possiblesMoves = new ArrayList<>();
       EnumMap<Wind, Collection<Move>> validMoves = this.rule.getBoardRule().findValidMoves(this.board, this.lastPlayedMove);
       for(Wind w : validMoves.keySet()){
           for(Move m : validMoves.get(w)){
               this.possiblesMoves.add(m);
           }
       }
+
       if(this.rule.getBoardRule().isGameFinished(this.board, this.lastPlayedMove)){
+        this.computeScore();
         this.exitGame(0,"Fin de la partie.");
       }
       else{
         this.propertyChangeSupport.firePropertyChange(POSSIBLE_MOVES_PROPERTY, null, null);
-        this.waitToRegisterMoves();
       }
+
+      TimerTask recalculateMoves = new TimerTask() {
+          @Override
+          public void run() {
+
+          }
+      };
+
+      Timer timer = new Timer();
+      timer.schedule(recalculateMoves, playingTime.toSeconds());
+
     }
 
-    /**
-     * Permet de lancer un thread attendant que les moves soit register
-     */
-    private synchronized void waitToRegisterMoves(){
-      Thread thread = new Thread(new Runnable(){
-        public void run(){
-          registeredMoves = new ArrayList<Move>();
-          ableToRegisterMoves = true;
-          try{
-              Thread.sleep((int)playingTime.getSeconds()*1000);
-              ableToRegisterMoves = false;
-              chooseMoveToApply();
-          }
-          catch (InterruptedException ie){
-              ableToRegisterMoves = false;
-              ie.printStackTrace();
-          }
-          catch(GameException ge){
-              exitGame(1, ge.getMessage());
-          }
+    @Override
+    public ArrayList<Move> getPossibleMoves() {
+        return this.possiblesMoves;
+    }
+
+    @Override
+    public ArrayList<Move> getPossibleMoves(Wind wind) throws GameException {
+        ArrayList<Move> mlist = new ArrayList<>();
+        for(Move m : this.possiblesMoves){
+            if(m.getWind()==wind){
+                mlist.add(m);
+            }
         }
-      });
-      thread.start();
+        return mlist;
+    }
+
+    @Override
+    public ArrayList<Move> getPossibleMoves(int player) throws GameException {
+        return getPossibleMoves(playerWind[player]);
     }
 
     /**
@@ -318,7 +321,7 @@ public class MahjongGame implements Game {
           throw new GameException(ge.getMessage());
       }
     }
-    
+
     /**
      * Les actions à effectuer lors d'une interruption de partie
      * @param state L'état de sortie (0 = sortie sans erreur, 1 = sortie avec erreur)
@@ -335,5 +338,83 @@ public class MahjongGame implements Game {
             default:
                 System.err.println("L'état envoyé n'est pas supporté.");
         }
+    }
+
+    /**
+     * Permet de calculer le score du joueur qui a fait Mahjong
+     */
+    private void computeScore(){
+      BoardRule br = this.rule.getBoardRule();
+      ScoringSystem ss = this.rule.getScoringSystem();
+      Wind playerWind = this.lastPlayedMove.getWind();
+      int highScore = 0;
+
+      Integer idLastTile = 0;
+      for(Integer inte : this.lastPlayedMove.getPath().keySet()) idLastTile = inte;
+      GameTileInterface winningTileInterface = this.board.getTile(idLastTile);
+      GameTile winningTile = null;
+      if(winningTileInterface instanceof GameTile) winningTile = (GameTile) winningTileInterface;
+
+      ArrayList<Combination> hand = new ArrayList<Combination>();
+      GameTile[] tab = new GameTile[board.getTileZone("Hand"+wind.getName()).getTiles().size()];
+      int j=0;
+      for(GameTileInterface gti : board.getTileZone("Hand"+wind.getName()).getTiles()){
+          GameTile gt = null;
+          if(gti instanceof GameTile) gt = (GameTile) gti;
+          if(gt != null) tab[j] = gt;
+          j++;
+      }
+      try{
+          hand.add(factory.newCombination(tab));
+      }catch(RulesException ex){
+
+      }
+      ArrayList<Combination> concealed = new ArrayList<Combination>();
+
+      ArrayList<Combination> melds = new ArrayList<Combination>();
+      for(int i=0; i<4; i++){
+          tab = new GameTile[board.getTileZone("Meld"+wind.getName()+String.valueOf(i)).getTiles().size()];
+          int k = 0;
+          for(GameTileInterface gti : board.getTileZone("Meld"+wind.getName()+String.valueOf(i)).getTiles()){
+              GameTile gt = null;
+              if(gti instanceof GameTile) gt = (GameTile) gti;
+              if(gt != null) tab[k] = gt;
+              k++;
+          }
+          try{
+              melds.add(factory.newCombination(tab));
+          }catch(RulesException ex){
+
+          }
+      }
+      ArrayList<GameTileInterface> supremeHonorsInterface = board.getTileZone("Supreme"+wind.getName()).getTiles();
+      ArrayList<GameTile> supremeHonors = new ArrayList<GameTile>();
+      for(GameTileInterface gti : supremeHonorsInterface){
+          GameTile gt = null;
+          if(gti instanceof GameTile) gt = (GameTile) gti;
+          if(gt != null) supremeHonors.add(gt);
+      }
+      boolean drawnFromWall = false;
+      boolean takenFromDiscard = false;
+
+      PlayerSituation ps = new PlayerSituation(winningTile, hand, concealed, melds, supremeHonors, drawnFromWall, takenFromDiscard, roundWind, playerWind);
+
+      int score = 0;
+      Collection<PlayerSet> playerSets =  ss.createSetsFromSituation(ps);
+      for(PlayerSet pset : playerSets){
+        Collection<IdentifiedPattern> patterns = ss.identifyPatterns(pset);
+        Collection<Collection<IdentifiedPattern>> patternsCollections = ss.splitIncompatiblePatterns(patterns);
+        for(Collection<IdentifiedPattern> c : patternsCollections){
+          score = ss.computeScore(c);
+          if(score > highScore) highScore = score;
+        }
+      }
+
+      for(int i=0; i<this.playerWind.length; i++){
+        if(this.playerWind[i].getSymbol() == playerWind.getSymbol()){
+          this.playerPoints[i] = highScore;
+          break;
+        }
+      }
     }
 }
